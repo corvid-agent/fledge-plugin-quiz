@@ -1,0 +1,14 @@
+[
+  {"question": "What does 'set -e' do in a bash script?", "answer": "exit on first error", "difficulty": "easy"},
+  {"question": "What does '2>&1' do in shell?", "answer": "redirects stderr to stdout", "difficulty": "easy"},
+  {"question": "What does the 'trap' builtin do?", "answer": "catches signals and runs commands on signal receipt", "difficulty": "medium"},
+  {"question": "What is the difference between $@ and $* in double quotes?", "answer": "$@ preserves individual arguments, $* joins them as one string", "difficulty": "hard"},
+  {"question": "What does 'set -u' do?", "answer": "treat unset variables as errors", "difficulty": "medium"},
+  {"question": "What does '${var:-default}' do?", "answer": "uses default if var is unset or empty", "difficulty": "medium"},
+  {"question": "What signal does Ctrl+C send?", "answer": "SIGINT", "difficulty": "easy"},
+  {"question": "What does 'exec' do without arguments in a script?", "answer": "redirects file descriptors for the current shell", "difficulty": "hard"},
+  {"question": "What does the 'nohup' command do?", "answer": "makes a command immune to hangup signals", "difficulty": "medium"},
+  {"question": "What does '${#var}' expand to?", "answer": "the length of the variable's value", "difficulty": "medium"},
+  {"question": "What is a here-string in bash (syntax)?", "answer": "<<<", "difficulty": "hard"},
+  {"question": "What does 'set -o pipefail' do?", "answer": "makes a pipeline return the exit code of the last failing command", "difficulty": "medium"}
+]

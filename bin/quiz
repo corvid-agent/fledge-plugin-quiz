@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PLUGIN_DIR="${FLEDGE_PLUGIN_DIR:?FLEDGE_PLUGIN_DIR not set — fledge >= 0.15.3 sets it automatically}"
+
+QUESTIONS_DIR="$PLUGIN_DIR/questions"
+SCORES_FILE="$PLUGIN_DIR/.quiz_scores.json"
+
+usage() {
+    cat <<'EOF'
+fledge quiz — developer trivia
+
+USAGE:
+    fledge quiz <command> [options]
+
+COMMANDS:
+    play [topic]        Answer questions (random topic if omitted)
+    topics              List available topics
+    scores              Show your score history
+    random              Single random question
+
+TOPICS:
+    http        HTTP status codes and methods
+    git         Git internals and commands
+    algorithms  Big-O, data structures, sorting
+    shell       Bash/POSIX shell tricks
+    rust        Rust language trivia
+    general     Mixed dev knowledge
+
+OPTIONS:
+    --count <n>     Number of questions (default: 5)
+    --hard          Only hard questions
+
+EXAMPLES:
+    fledge quiz play
+    fledge quiz play http --count 10
+    fledge quiz random
+    fledge quiz scores
+EOF
+}
+
+list_topics() {
+    echo "Available topics:"
+    echo ""
+    for f in "$QUESTIONS_DIR"/*.json; do
+        [[ -f "$f" ]] || continue
+        local topic=$(basename "$f" .json)
+        local count=0
+        if command -v jq &>/dev/null; then
+            count=$(jq 'length' "$f")
+        fi
+        printf "  %-15s %s questions\n" "$topic" "$count"
+    done
+}
+
+pick_questions() {
+    local topic="${1:-}"
+    local count="${2:-5}"
+    local hard="${3:-false}"
+
+    if [[ -z "$topic" ]]; then
+        local files=("$QUESTIONS_DIR"/*.json)
+        local file="${files[$((RANDOM % ${#files[@]}))]}"
+        topic=$(basename "$file" .json)
+    fi
+
+    local file="$QUESTIONS_DIR/$topic.json"
+    if [[ ! -f "$file" ]]; then
+        echo "Topic '$topic' not found. Run 'fledge quiz topics' to see available topics."
+        exit 1
+    fi
+
+    if ! command -v jq &>/dev/null; then
+        echo "jq required for quiz. Install: brew install jq"
+        exit 1
+    fi
+
+    local filter='.'
+    if [[ "$hard" == "true" ]]; then
+        filter='[.[] | select(.difficulty == "hard")]'
+    fi
+
+    jq -r --argjson n "$count" "$filter | [range(length)] as \$idx | [.\$idx[]] | if length > \$n then [limit(\$n; recurse(. + 1; . < length) | .[.:][:1][])] else . end" "$file" 2>/dev/null || \
+    jq -c --argjson n "$count" "$filter | .[:$n]" "$file"
+}
+
+play_quiz() {
+    local topic="${1:-}"
+    local count=5
+    local hard=false
+
+    shift || true
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --count) count="$2"; shift 2 ;;
+            --hard)  hard=true; shift ;;
+            *) shift ;;
+        esac
+    done
+
+    local file=""
+    if [[ -z "$topic" ]]; then
+        local files=("$QUESTIONS_DIR"/*.json)
+        file="${files[$((RANDOM % ${#files[@]}))]}"
+        topic=$(basename "$file" .json)
+    else
+        file="$QUESTIONS_DIR/$topic.json"
+    fi
+
+    if [[ ! -f "$file" ]]; then
+        echo "Topic '$topic' not found."
+        exit 1
+    fi
+
+    if ! command -v jq &>/dev/null; then
+        echo "jq required. Install: brew install jq"
+        exit 1
+    fi
+
+    echo "=== Developer Quiz: $topic ==="
+    echo ""
+
+    local total_q=$(jq 'length' "$file")
+    if [[ $count -gt $total_q ]]; then
+        count=$total_q
+    fi
+
+    local indices=$(shuf -i 0-$((total_q - 1)) -n "$count" 2>/dev/null || \
+        python3 -c "import random; r=list(range($total_q)); random.shuffle(r); print(' '.join(map(str,r[:$count])))" 2>/dev/null || \
+        seq 0 $((count - 1)))
+
+    local correct=0
+    local qnum=0
+
+    for idx in $indices; do
+        qnum=$((qnum + 1))
+        local q=$(jq -r ".[$idx].question" "$file")
+        local a=$(jq -r ".[$idx].answer" "$file")
+        local choices=$(jq -r ".[$idx].choices // [] | .[]" "$file")
+        local difficulty=$(jq -r ".[$idx].difficulty // \"medium\"" "$file")
+
+        if [[ "$hard" == "true" ]] && [[ "$difficulty" != "hard" ]]; then
+            continue
+        fi
+
+        echo "Q$qnum [$difficulty]: $q"
+
+        if [[ -n "$choices" ]]; then
+            local i=1
+            while IFS= read -r choice; do
+                echo "  $i) $choice"
+                i=$((i + 1))
+            done <<< "$choices"
+            echo ""
+        fi
+
+        read -r -p "Your answer: " user_answer </dev/tty || user_answer=""
+
+        local normalized_answer=$(echo "$user_answer" | tr '[:upper:]' '[:lower:]' | xargs)
+        local normalized_correct=$(echo "$a" | tr '[:upper:]' '[:lower:]' | xargs)
+
+        if [[ "$normalized_answer" == "$normalized_correct" ]]; then
+            echo "  ✓ Correct!"
+            correct=$((correct + 1))
+        else
+            echo "  ✗ Wrong. Answer: $a"
+        fi
+        echo ""
+    done
+
+    echo "Score: $correct/$qnum"
+
+    if [[ $correct -eq $qnum ]]; then
+        echo "Perfect! 🎯"
+    elif [[ $correct -ge $((qnum * 3 / 4)) ]]; then
+        echo "Great job!"
+    elif [[ $correct -ge $((qnum / 2)) ]]; then
+        echo "Not bad."
+    else
+        echo "Keep studying!"
+    fi
+}
+
+random_question() {
+    local files=("$QUESTIONS_DIR"/*.json)
+    local file="${files[$((RANDOM % ${#files[@]}))]}"
+    local topic=$(basename "$file" .json)
+
+    if ! command -v jq &>/dev/null; then
+        echo "jq required. Install: brew install jq"
+        exit 1
+    fi
+
+    local total=$(jq 'length' "$file")
+    local idx=$((RANDOM % total))
+
+    local q=$(jq -r ".[$idx].question" "$file")
+    local a=$(jq -r ".[$idx].answer" "$file")
+    local difficulty=$(jq -r ".[$idx].difficulty // \"medium\"" "$file")
+
+    echo "[$topic | $difficulty]"
+    echo ""
+    echo "  $q"
+    echo ""
+    read -r -p "Your answer (or press Enter to reveal): " user_answer </dev/tty || user_answer=""
+
+    if [[ -z "$user_answer" ]]; then
+        echo "  Answer: $a"
+    else
+        local normalized_answer=$(echo "$user_answer" | tr '[:upper:]' '[:lower:]' | xargs)
+        local normalized_correct=$(echo "$a" | tr '[:upper:]' '[:lower:]' | xargs)
+        if [[ "$normalized_answer" == "$normalized_correct" ]]; then
+            echo "  ✓ Correct!"
+        else
+            echo "  ✗ Answer: $a"
+        fi
+    fi
+}
+
+cmd="${1:-help}"
+shift || true
+
+case "$cmd" in
+    play|p)       play_quiz "$@" ;;
+    topics|t)     list_topics ;;
+    random|r)     random_question ;;
+    scores|s)     echo "Score tracking coming in v0.2.0" ;;
+    help|--help|-h) usage ;;
+    *)            echo "Unknown command: $cmd"; usage; exit 1 ;;
+esac

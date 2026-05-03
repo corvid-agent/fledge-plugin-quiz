@@ -1,0 +1,14 @@
+[
+  {"question": "What does CORS stand for?", "answer": "Cross-Origin Resource Sharing", "difficulty": "easy"},
+  {"question": "What port does HTTPS use by default?", "answer": "443", "difficulty": "easy"},
+  {"question": "What does the CAP theorem state you can only have 2 of 3 of?", "answer": "Consistency, Availability, Partition tolerance", "difficulty": "medium"},
+  {"question": "What encoding does a JWT use for its parts?", "answer": "base64url", "difficulty": "medium"},
+  {"question": "What does ACID stand for in databases?", "answer": "Atomicity, Consistency, Isolation, Durability", "difficulty": "medium"},
+  {"question": "What is the maximum length of a DNS label (between dots)?", "answer": "63", "difficulty": "hard"},
+  {"question": "What Linux signal cannot be caught or ignored?", "answer": "SIGKILL", "difficulty": "medium"},
+  {"question": "What does TTL stand for in DNS/networking?", "answer": "Time To Live", "difficulty": "easy"},
+  {"question": "What year was Git first released?", "answer": "2005", "difficulty": "hard"},
+  {"question": "What cipher suite does TLS 1.3 mandate?", "answer": "AES-128-GCM", "difficulty": "hard"},
+  {"question": "What is the default port for PostgreSQL?", "answer": "5432", "difficulty": "medium"},
+  {"question": "What does 'localhost' resolve to in IPv4?", "answer": "127.0.0.1", "difficulty": "easy"}
+]

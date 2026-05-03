@@ -1,0 +1,14 @@
+[
+  {"question": "What keyword makes a variable mutable in Rust?", "answer": "mut", "difficulty": "easy"},
+  {"question": "What trait must be implemented for println!(\"{}\", x)?", "answer": "Display", "difficulty": "easy"},
+  {"question": "What is the zero-cost abstraction for runtime polymorphism in Rust?", "answer": "enum dispatch", "difficulty": "hard"},
+  {"question": "What does the '?' operator do?", "answer": "returns early with the error if Result is Err", "difficulty": "easy"},
+  {"question": "What is the default integer type in Rust?", "answer": "i32", "difficulty": "easy"},
+  {"question": "What does 'Box<dyn Trait>' give you?", "answer": "heap-allocated trait object with dynamic dispatch", "difficulty": "medium"},
+  {"question": "What lifetime annotation means 'static lifetime'?", "answer": "'static", "difficulty": "medium"},
+  {"question": "What does '#[derive(Clone)]' generate?", "answer": "an implementation of the Clone trait", "difficulty": "easy"},
+  {"question": "What is the Rust equivalent of a null pointer?", "answer": "None (from Option<T>)", "difficulty": "easy"},
+  {"question": "What does 'unsafe' allow that safe Rust doesn't?", "answer": "dereferencing raw pointers, calling unsafe functions, accessing mutable statics", "difficulty": "medium"},
+  {"question": "What trait provides the 'into()' method?", "answer": "Into", "difficulty": "medium"},
+  {"question": "What is the name of Rust's async runtime in the ecosystem (most popular)?", "answer": "tokio", "difficulty": "medium"}
+]

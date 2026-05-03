@@ -1,0 +1,15 @@
+[plugin]
+name = "quiz"
+version = "0.1.0"
+description = "Developer trivia quiz — HTTP codes, git internals, algorithms, shell"
+author = "corvid-agent"
+
+[[commands]]
+name = "quiz"
+description = "Developer trivia challenges"
+binary = "bin/quiz"
+
+[capabilities]
+exec = false
+store = false
+metadata = false

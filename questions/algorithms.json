@@ -1,0 +1,14 @@
+[
+  {"question": "What is the time complexity of binary search?", "answer": "O(log n)", "difficulty": "easy"},
+  {"question": "What data structure uses LIFO ordering?", "answer": "stack", "difficulty": "easy"},
+  {"question": "What is the worst-case time complexity of quicksort?", "answer": "O(n^2)", "difficulty": "medium"},
+  {"question": "What is the space complexity of merge sort?", "answer": "O(n)", "difficulty": "medium"},
+  {"question": "What algorithm finds the shortest path in a weighted graph with no negative edges?", "answer": "Dijkstra", "difficulty": "medium"},
+  {"question": "What is the time complexity of inserting into a balanced BST?", "answer": "O(log n)", "difficulty": "easy"},
+  {"question": "What is the amortized time complexity of appending to a dynamic array?", "answer": "O(1)", "difficulty": "medium"},
+  {"question": "What is a bloom filter's false positive rate relationship to size?", "answer": "decreases as size increases", "difficulty": "hard"},
+  {"question": "What data structure gives O(1) insert, delete, and lookup?", "answer": "hash table", "difficulty": "easy"},
+  {"question": "What is the time complexity of building a heap from an array?", "answer": "O(n)", "difficulty": "hard"},
+  {"question": "What sorting algorithm is stable, in-place, and O(n^2) worst case?", "answer": "insertion sort", "difficulty": "medium"},
+  {"question": "What tree traversal visits nodes in sorted order for a BST?", "answer": "inorder", "difficulty": "easy"}
+]

@@ -1,0 +1,17 @@
+[
+  {"question": "What HTTP status code means 'Not Found'?", "answer": "404", "difficulty": "easy"},
+  {"question": "What HTTP status code means 'Created'?", "answer": "201", "difficulty": "easy"},
+  {"question": "What HTTP status code means 'No Content'?", "answer": "204", "difficulty": "medium"},
+  {"question": "What HTTP status code means 'Too Many Requests'?", "answer": "429", "difficulty": "medium"},
+  {"question": "What HTTP status code means 'I'm a Teapot'?", "answer": "418", "difficulty": "hard"},
+  {"question": "What HTTP status code means 'Service Unavailable'?", "answer": "503", "difficulty": "easy"},
+  {"question": "What HTTP status code means 'Moved Permanently'?", "answer": "301", "difficulty": "easy"},
+  {"question": "What HTTP status code means 'Forbidden'?", "answer": "403", "difficulty": "easy"},
+  {"question": "What HTTP status code means 'Conflict'?", "answer": "409", "difficulty": "medium"},
+  {"question": "What HTTP status code means 'Gone'?", "answer": "410", "difficulty": "medium"},
+  {"question": "What HTTP method is idempotent but not safe?", "answer": "PUT", "difficulty": "medium"},
+  {"question": "What HTTP status code means 'Unprocessable Entity'?", "answer": "422", "difficulty": "hard"},
+  {"question": "What HTTP header prevents MIME-type sniffing?", "answer": "X-Content-Type-Options", "difficulty": "hard"},
+  {"question": "What HTTP status code means 'Accepted' (request received, processing not complete)?", "answer": "202", "difficulty": "medium"},
+  {"question": "What HTTP status code means 'Bad Gateway'?", "answer": "502", "difficulty": "easy"}
+]

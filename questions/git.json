@@ -1,0 +1,14 @@
+[
+  {"question": "What git command shows the commit log as a graph?", "answer": "git log --graph", "difficulty": "easy"},
+  {"question": "What does 'git stash pop' do?", "answer": "applies the most recent stash and removes it from the stash list", "difficulty": "easy"},
+  {"question": "What object type does a git tag point to?", "answer": "commit", "difficulty": "medium"},
+  {"question": "What is the git plumbing command to create a blob object?", "answer": "git hash-object", "difficulty": "hard"},
+  {"question": "What does 'git reflog' show?", "answer": "history of HEAD movements", "difficulty": "medium"},
+  {"question": "What flag makes 'git commit' include all modified tracked files?", "answer": "-a", "difficulty": "easy"},
+  {"question": "What does 'git cherry-pick' do?", "answer": "applies a specific commit to the current branch", "difficulty": "medium"},
+  {"question": "What are the three object types in git's object store?", "answer": "blob, tree, commit", "difficulty": "hard"},
+  {"question": "What does 'git bisect' help you do?", "answer": "find the commit that introduced a bug using binary search", "difficulty": "medium"},
+  {"question": "What config sets the default branch name for new repos?", "answer": "init.defaultBranch", "difficulty": "hard"},
+  {"question": "What does the '--force-with-lease' flag do on git push?", "answer": "force pushes only if remote matches your last fetch", "difficulty": "hard"},
+  {"question": "What does 'git worktree' allow?", "answer": "multiple working directories from one repository", "difficulty": "medium"}
+]
