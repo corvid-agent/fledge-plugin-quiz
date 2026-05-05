@@ -24,13 +24,10 @@ fn default_difficulty() -> String {
 }
 
 fn plugin_dir() -> PathBuf {
-    PathBuf::from(
-        std::env::var("FLEDGE_PLUGIN_DIR")
-            .unwrap_or_else(|_| {
-                eprintln!("FLEDGE_PLUGIN_DIR not set — fledge >= 0.15.3 sets it automatically");
-                process::exit(1);
-            }),
-    )
+    PathBuf::from(std::env::var("FLEDGE_PLUGIN_DIR").unwrap_or_else(|_| {
+        eprintln!("FLEDGE_PLUGIN_DIR not set — fledge >= 0.15.3 sets it automatically");
+        process::exit(1);
+    }))
 }
 
 fn questions_dir() -> PathBuf {
@@ -53,7 +50,7 @@ fn available_topics(dir: &Path) -> Vec<(String, PathBuf)> {
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries.flatten() {
             let path = entry.path();
-            if path.extension().map_or(false, |e| e == "json") {
+            if path.extension().is_some_and(|e| e == "json") {
                 let name = path.file_stem().unwrap().to_string_lossy().to_string();
                 topics.push((name, path));
             }
@@ -97,7 +94,10 @@ fn cmd_topics() {
     for (name, path) in &topics {
         let questions = load_questions(path);
         let easy = questions.iter().filter(|q| q.difficulty == "easy").count();
-        let med = questions.iter().filter(|q| q.difficulty == "medium").count();
+        let med = questions
+            .iter()
+            .filter(|q| q.difficulty == "medium")
+            .count();
         let hard = questions.iter().filter(|q| q.difficulty == "hard").count();
 
         queue!(
@@ -497,5 +497,76 @@ fn main() {
             print_usage();
             process::exit(1);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    #[test]
+    fn test_default_difficulty() {
+        assert_eq!(default_difficulty(), "medium");
+    }
+
+    #[test]
+    fn test_difficulty_color_mapping() {
+        assert_eq!(difficulty_color("easy"), Color::Green);
+        assert_eq!(difficulty_color("medium"), Color::Yellow);
+        assert_eq!(difficulty_color("hard"), Color::Red);
+        assert_eq!(difficulty_color("unknown"), Color::White);
+    }
+
+    #[test]
+    fn test_load_questions_from_json() {
+        let dir = std::env::temp_dir().join("quiz_test_load");
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("test.json");
+        let mut f = std::fs::File::create(&path).unwrap();
+        write!(
+            f,
+            r#"[{{"question":"What is 1+1?","answer":"2","difficulty":"easy"}}]"#
+        )
+        .unwrap();
+
+        let questions = load_questions(&path);
+        assert_eq!(questions.len(), 1);
+        assert_eq!(questions[0].question, "What is 1+1?");
+        assert_eq!(questions[0].answer, "2");
+        assert_eq!(questions[0].difficulty, "easy");
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn test_available_topics_filters_json() {
+        let dir = std::env::temp_dir().join("quiz_test_topics");
+        std::fs::create_dir_all(&dir).unwrap();
+
+        // Create a JSON file
+        std::fs::write(dir.join("rust.json"), r#"[{"question":"q","answer":"a"}]"#).unwrap();
+        // Create a non-JSON file (should be excluded)
+        std::fs::write(dir.join("notes.txt"), "not a topic").unwrap();
+
+        let topics = available_topics(&dir);
+        assert_eq!(topics.len(), 1);
+        assert_eq!(topics[0].0, "rust");
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn test_question_deserialization_without_difficulty() {
+        let json = r#"[{"question":"Q?","answer":"A"}]"#;
+        let questions: Vec<Question> = serde_json::from_str(json).unwrap();
+        assert_eq!(questions[0].difficulty, "medium");
+    }
+
+    #[test]
+    fn test_print_header_does_not_panic() {
+        let mut buf = Vec::new();
+        print_header(&mut buf, "Test Header");
+        assert!(!buf.is_empty());
     }
 }
