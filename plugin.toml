@@ -1,5 +1,5 @@
 [plugin]
-name = "quiz"
+name = "fledge-plugin-quiz"
 version = "0.2.0"
 description = "Developer trivia quiz — HTTP codes, git internals, algorithms, shell"
 author = "corvid-agent"
